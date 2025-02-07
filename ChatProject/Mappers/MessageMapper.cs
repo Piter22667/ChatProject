@@ -34,9 +34,8 @@ namespace ChatProject.Mappers
 
         public static IEnumerable<MessageDto> getAllMessage(ApplicationDbContext context)
         {
-            return context.Messages
-                .ToList()
-                .Select(c => c.ToMessageDto());
+            return context.Messages.Select(c => c.ToMessageDto()).ToList()
+               ;
         }
 
         public static MessageDto createMessage(ApplicationDbContext context, CreateMessageDto createMessageDto)

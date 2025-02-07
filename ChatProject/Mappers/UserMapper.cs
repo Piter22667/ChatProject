@@ -39,9 +39,7 @@ namespace ChatProject.Mappers
 
         public static IEnumerable<UserDto> getllUsers(ApplicationDbContext dbContext)
         {
-            return dbContext.User
-                .ToList()
-                .Select(u => u.ToUserDto());
+            return dbContext.User.Select(u => u.ToUserDto()).ToList();
         }
 
 

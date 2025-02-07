@@ -1,6 +1,6 @@
 ﻿namespace ChatProject.Models
 {
-    public class ArchivedMessage
+    public class ArchivedMessag
     {
         public int Id { get; set; }
         public int ChatId { get; set; }

@@ -44,9 +44,7 @@ namespace ChatProject.Mappers
 
         public static IEnumerable<ChatDto> getAllChats(ApplicationDbContext dbContext)
         {
-            return dbContext.Chats
-                .ToList()
-                .Select(c => c.ToChatDto());
+            return dbContext.Chats.Select(c => c.ToChatDto()).ToList();
         }
 
         public static ChatDto createChat(ApplicationDbContext dbContext, CreateChatDto createChatDto)
@@ -60,11 +58,16 @@ namespace ChatProject.Mappers
             dbContext.SaveChanges();
             return chat.ToChatDto();
         }
-
+        /// <summary>
+        /// Отримати чат по Id
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="id">Id</param>
+        /// <returns>Користувач із вказаним айді</returns>
+        /// <exception cref="Exception"></exception>
         public static ChatDto getChatById(ApplicationDbContext dbContext, int id)
         {
-            var chat = dbContext.Chats
-                .FirstOrDefault(c => c.Id == id);
+            var chat = dbContext.Chats.FirstOrDefault(c => c.Id == id);
             if (chat == null)
             {
                 throw new Exception("Chat not found.");
@@ -74,8 +77,7 @@ namespace ChatProject.Mappers
         
         public static UpdateChatDto updateChat(ApplicationDbContext dbContext, int id, UpdateChatDto updateChatDto)
         {
-            var chat = dbContext.Chats
-                .FirstOrDefault(c => c.Id == id);
+            var chat = dbContext.Chats.FirstOrDefault(c => c.Id == id);
             if (chat == null)
             {
                 throw new Exception("Chat not found.");
