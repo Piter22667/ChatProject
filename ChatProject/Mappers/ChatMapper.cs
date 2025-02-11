@@ -5,6 +5,7 @@ using ChatProject.Models;
 using ChatProject.Dto.Message;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
+using ChatProject.Controllers;
 
 namespace ChatProject.Mappers
 {
@@ -39,6 +40,7 @@ namespace ChatProject.Mappers
             }; // поле actualExpiration буде використовуватись тільки коли
                // користувач буде виконувати запит на закриття чату окремо
         }
+
 
         ///Розширюваний метод для отримання всхі повідомлень з конкретного чату
         public static IEnumerable<MessageDto> ToMessageDto(this IEnumerable<Models.Message> messages)
@@ -141,8 +143,9 @@ namespace ChatProject.Mappers
             return chat.ToChatUpdateDto();
         }
 
-        public static UpdateChatActivityDto updateChatActivity(ApplicationDbContext dbContext, int id, UpdateChatActivityDto updateChatDto, int userId)
+        public static UpdateChatActivityDto updateChatActivity(ApplicationDbContext dbContext, int id, UpdateChatActivityDto updateChatDto)
         {
+            int userId = 1; //Заглушка під юзера
             var chat = dbContext.Chats.FirstOrDefault(c => c.Id == id);
             if (chat == null)
             {
@@ -162,8 +165,9 @@ namespace ChatProject.Mappers
         }
 
 
-        public static MessagesInChatToReturnDto archiveChat(ApplicationDbContext dbContext, int chatId, int userId)
+        public static MessagesInChatToReturnDto archiveChat(ApplicationDbContext dbContext, int chatId)
         {
+            int userId = 1; //Заглушка під юзер айді
             var chat = dbContext.Chats.FirstOrDefault(c => c.Id == chatId);
             if (chat == null)
             {
@@ -202,8 +206,9 @@ namespace ChatProject.Mappers
 
 
 
-        public static MessagesInChatToReturnDto unArchiveChat(ApplicationDbContext dbContext, int chatId, int userId, UnarchiveChatDto unarchiveChatDto)
+        public static MessagesInChatToReturnDto unArchiveChat(ApplicationDbContext dbContext, int chatId, UnarchiveChatDto unarchiveChatDto)
         {
+            int userId = 1; //Заглушка під юзер айді
             var chat = dbContext.Chats.FirstOrDefault(c => c.Id == chatId);
             if (chat == null)
             {

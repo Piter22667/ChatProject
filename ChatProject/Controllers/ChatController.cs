@@ -19,7 +19,6 @@ namespace ChatProject.Controllers
             _context = context;
         }
 
-
         /// <summary>
         /// Отримати інформацію про всі чати
         /// </summary>
@@ -29,7 +28,6 @@ namespace ChatProject.Controllers
         {
             return Ok(ChatMapper.getAllChats(_context));
         }
-
 
         /// <summary>
         /// Отримати чат за Id
@@ -91,9 +89,8 @@ namespace ChatProject.Controllers
         /// Оновити назву чату
         /// </summary>
         /// <param name="id">Id чату, який потрібно оновити</param>
-        /// <param name="updateChatDto"></param>
         /// <returns>Інформація про оновлення чату</returns>
-        [HttpPut("{chatId}/title")]
+        [HttpPut("{id}/title")]
         public IActionResult UpdateChatTitle(int id, [FromBody] UpdateChatTitleDto updateChatDto)
         {
             try
@@ -115,12 +112,12 @@ namespace ChatProject.Controllers
         /// <param name="userId">Id користувача для перевірки прав доступу до зміни чату</param>
         /// <returns>Інформація про змінену активність чату</returns>
         [HttpPut("{chatId}/editActivity")]
-        public IActionResult UpdateChatActivity(int chatId, [FromBody] UpdateChatActivityDto updateChatActivityDto, int userId)
+        public IActionResult UpdateChatActivity(int chatId, [FromBody] UpdateChatActivityDto updateChatActivityDto)
         {
             try
             {
                 //var currentUserId = int.Parse(HttpContext.User.FindFirst("Id").Value);
-                var updatedChat = ChatMapper.updateChatActivity(_context, chatId, updateChatActivityDto, userId);
+                var updatedChat = ChatMapper.updateChatActivity(_context, chatId, updateChatActivityDto);
                 return Ok(updatedChat);
             }
             catch (UnauthorizedAccessException ex)
@@ -141,12 +138,12 @@ namespace ChatProject.Controllers
         /// <param name="userId">Id користувача для перевірки прав доступу на перенесення чату в архів</param>
         /// <returns>Інформація про кількість перенесених повідомлень з чату з Id</returns>
         [HttpPut("{chatId}/archive")]
-        public IActionResult TransferChatActivity(int chatId, int userId)
+        public IActionResult TransferChatActivity(int chatId)
         {
             try
             {
                 //ApplicationDbContext dbContext, int id, int userId
-                var updatedChat = ChatMapper.archiveChat(_context, chatId, userId);
+                var updatedChat = ChatMapper.archiveChat(_context, chatId);
                 return Ok(updatedChat);
             } catch (UnauthorizedAccessException ex)
             {
@@ -165,11 +162,11 @@ namespace ChatProject.Controllers
         /// <param name="userId">Id користувача для перевірки прав доступу на редагування інфорації про чат</param>
         /// <returns>Інформація про кількість перенесених повідомлень</returns>
         [HttpPut("{chatId}/unarchive")]
-        public IActionResult UnarchiveChat(int chatId, int userId, [FromBody] UnarchiveChatDto unarchiveChatDto)
+        public IActionResult UnarchiveChat(int chatId, [FromBody] UnarchiveChatDto unarchiveChatDto)
         {
             try
             {
-                var updatedChat = ChatMapper.unArchiveChat(_context, chatId, userId, unarchiveChatDto);
+                var updatedChat = ChatMapper.unArchiveChat(_context, chatId, unarchiveChatDto);
                 return Ok(updatedChat);
             }
             catch (UnauthorizedAccessException ex)
