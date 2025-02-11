@@ -16,7 +16,6 @@ namespace ChatProject.Mappers
                 UserId = message.UserId,
                 Content = message.Content,
                 SentTime = message.SentTime,
-                ExpiresAt = message.ExpiresAt
             };
         }
 
@@ -26,7 +25,6 @@ namespace ChatProject.Mappers
             {
                Content = createMessageDto.Content,
                 SentTime = createMessageDto.SentTime,
-                ExpiresAt = createMessageDto.ExpiresAt,
                 ChatId = createMessageDto.ChatId,
                 UserId = createMessageDto.UserId,
             };

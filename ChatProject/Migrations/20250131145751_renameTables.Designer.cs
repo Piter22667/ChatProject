@@ -25,7 +25,7 @@ namespace ChatProject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ChatProject.Models.ArchivedMessage", b =>
+            modelBuilder.Entity("ChatProject.Models.Archived", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -56,7 +56,7 @@ namespace ChatProject.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ArchivedMessages");
+                    b.ToTable("Archived");
                 });
 
             modelBuilder.Entity("ChatProject.Models.Chat", b =>
@@ -162,16 +162,16 @@ namespace ChatProject.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("ChatProject.Models.ArchivedMessage", b =>
+            modelBuilder.Entity("ChatProject.Models.Archived", b =>
                 {
                     b.HasOne("ChatProject.Models.Chat", "Chat")
-                        .WithMany("ArchivedMessages")
+                        .WithMany("Archived")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("ChatProject.Models.User", "User")
-                        .WithMany("ArchivedMessages")
+                        .WithMany("Archived")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -202,14 +202,14 @@ namespace ChatProject.Migrations
 
             modelBuilder.Entity("ChatProject.Models.Chat", b =>
                 {
-                    b.Navigation("ArchivedMessages");
+                    b.Navigation("Archived");
 
                     b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("ChatProject.Models.User", b =>
                 {
-                    b.Navigation("ArchivedMessages");
+                    b.Navigation("Archived");
 
                     b.Navigation("Messages");
                 });

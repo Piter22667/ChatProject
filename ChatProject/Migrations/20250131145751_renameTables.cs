@@ -33,7 +33,7 @@ namespace ChatProject.Migrations
 
 
             migrationBuilder.CreateTable(
-                name: "ArchivedMessages",
+                name: "Archived",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -92,12 +92,12 @@ namespace ChatProject.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArchivedMessages_ChatId",
-                table: "ArchivedMessages",
+                table: "Archived",
                 column: "ChatId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArchivedMessages_UserId",
-                table: "ArchivedMessages",
+                table: "Archived",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -115,7 +115,7 @@ namespace ChatProject.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ArchivedMessages");
+                name: "Archived");
 
             migrationBuilder.DropTable(
                 name: "Messages");

@@ -4,6 +4,7 @@ using ChatProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250207192158_testTableEditing")]
+    partial class testTableEditing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,13 +63,13 @@ namespace ChatProject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("ActualExpiration")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreationTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
-
-                    b.Property<DateTime?>("Expiration")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsClosed")
                         .ValueGeneratedOnAdd()
@@ -85,9 +88,6 @@ namespace ChatProject.Migrations
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("isArchived")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -168,7 +168,7 @@ namespace ChatProject.Migrations
             modelBuilder.Entity("ChatProject.Models.Archived", b =>
                 {
                     b.HasOne("ChatProject.Models.Chat", "Chat")
-                        .WithMany("ArchivedMessages")
+                        .WithMany("Archived")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -215,7 +215,7 @@ namespace ChatProject.Migrations
 
             modelBuilder.Entity("ChatProject.Models.Chat", b =>
                 {
-                    b.Navigation("ArchivedMessages");
+                    b.Navigation("Archived");
 
                     b.Navigation("Messages");
                 });

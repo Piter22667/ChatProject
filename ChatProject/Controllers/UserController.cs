@@ -17,13 +17,21 @@ namespace ChatProject.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Отримати інформацію про всіх користувачів
+        /// </summary>
+        /// <returns>Список всіх користувачів</returns>
         [HttpGet]
         public IActionResult GetAllUsers()
         {
             return Ok(UserMapper.getllUsers(_context));
         }
 
-
+        /// <summary>
+        /// Отримати інформацію про користувача
+        /// </summary>
+        /// <param name="id">Id користувача</param>
+        /// <returns>Інформація про користувача за Id</returns>
         [HttpGet("{id}")]
         public IActionResult GetById([FromRoute] int id)
         {
@@ -38,7 +46,11 @@ namespace ChatProject.Controllers
             }
         }  
 
-
+        /// <summary>
+        /// Додати нового користувача
+        /// </summary>
+        /// <param name="createUserDto">Інформація про нового користувача</param>
+        /// <returns>Інформація про нового користувача</returns>
         [HttpPost]
         public IActionResult CreateUser([FromBody] CreateUserDto createUserDto)
         {

@@ -11,6 +11,7 @@
 
         // Navigation properties
         public ICollection<Message> Messages { get; set; } = new List<Message>(); // один юзер може мати багато повідомлень
-        public ICollection<ArchivedMessage> ArchivedMessages { get; set; } = new List<ArchivedMessage>(); // один юзер може мати багато архівованих повідомлень
+        public ICollection<Archived> Archived { get; set; } = new List<Archived>(); // один юзер може мати багато архівованих повідомлень
+        public ICollection<Chat> Chats { get; set; } = new List<Chat>(); // один юзер може бути у багатьох чатах    }
     }
 }

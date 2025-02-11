@@ -1,5 +1,8 @@
 ﻿namespace ChatProject.Dto.User
-{
+{   
+    /// <summary>
+    /// Інформація про користувача
+    /// </summary>
     public class UserDto
     {
         public int Id { get; set; }

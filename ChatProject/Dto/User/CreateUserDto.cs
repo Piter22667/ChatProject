@@ -1,5 +1,8 @@
 ﻿namespace ChatProject.Dto.User
 {
+    /// <summary>
+    /// інформація про доданого користувача
+    /// </summary>
     public class CreateUserDto
     {
         public string Login { get; set; }

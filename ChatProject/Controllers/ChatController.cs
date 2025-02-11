@@ -19,12 +19,23 @@ namespace ChatProject.Controllers
             _context = context;
         }
 
+
+        /// <summary>
+        /// Отримати інформацію про всі чати
+        /// </summary>
+        /// <returns>Список всіх існуючих чатів та детальна інформація про них</returns>
         [HttpGet]
         public IActionResult GetAllChats()
         {
             return Ok(ChatMapper.getAllChats(_context));
         }
 
+
+        /// <summary>
+        /// Отримати чат за Id
+        /// </summary>
+        /// <param name="id">Id чату</param>
+        /// <returns>Інформація про чат з Id</returns>
         [HttpGet("{id}")]
         public IActionResult GetChatById([FromRoute] int id)
         {
@@ -39,8 +50,30 @@ namespace ChatProject.Controllers
             }
         }
 
+        /// <summary>
+        /// Отримати всі повідомлення з чату
+        /// </summary>
+        /// <param name="id">Id чату</param>
+        /// <returns>Всі повідомлення з чату з конекретним Id</returns>
+        [HttpGet("{id}/messages")]
+        public IActionResult GetAllMessagesFromChat([FromRoute] int id)
+        {
+            try
+            {
+                var messages = ChatMapper.getAllMessagesFromChat(_context, id);
+                return Ok(messages);
+            }
+            catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+        /// <summary>
+        /// Створити новий чат
+        /// </summary>
+        /// <param name="createChatDto">Інформація про чат</param>
+        /// <returns>Інформація про доданий чат</returns>
         [HttpPost]
-        public IActionResult CreateUser([FromBody] CreateChatDto createChatDto)
+        public IActionResult CreateChat([FromBody] CreateChatDto createChatDto)
         {
             try
             {
@@ -53,8 +86,15 @@ namespace ChatProject.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateChat(int id, [FromBody] UpdateChatDto updateChatDto)
+
+        /// <summary>
+        /// Оновити назву чату
+        /// </summary>
+        /// <param name="id">Id чату, який потрібно оновити</param>
+        /// <param name="updateChatDto"></param>
+        /// <returns>Інформація про оновлення чату</returns>
+        [HttpPut("{chatId}/title")]
+        public IActionResult UpdateChatTitle(int id, [FromBody] UpdateChatTitleDto updateChatDto)
         {
             try
             {
@@ -66,5 +106,81 @@ namespace ChatProject.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Відкрити або закрити чат для написання
+        /// </summary>
+        /// <param name="chatId">Id чату</param>
+        /// <param name="updateChatActivityDto"></param>
+        /// <param name="userId">Id користувача для перевірки прав доступу до зміни чату</param>
+        /// <returns>Інформація про змінену активність чату</returns>
+        [HttpPut("{chatId}/editActivity")]
+        public IActionResult UpdateChatActivity(int chatId, [FromBody] UpdateChatActivityDto updateChatActivityDto, int userId)
+        {
+            try
+            {
+                //var currentUserId = int.Parse(HttpContext.User.FindFirst("Id").Value);
+                var updatedChat = ChatMapper.updateChatActivity(_context, chatId, updateChatActivityDto, userId);
+                return Ok(updatedChat);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+          
+        }
+
+        /// <summary>
+        /// Перенести чат в архів
+        /// </summary>
+        /// <param name="chatId">Id чату </param>
+        /// <param name="userId">Id користувача для перевірки прав доступу на перенесення чату в архів</param>
+        /// <returns>Інформація про кількість перенесених повідомлень з чату з Id</returns>
+        [HttpPut("{chatId}/archive")]
+        public IActionResult TransferChatActivity(int chatId, int userId)
+        {
+            try
+            {
+                //ApplicationDbContext dbContext, int id, int userId
+                var updatedChat = ChatMapper.archiveChat(_context, chatId, userId);
+                return Ok(updatedChat);
+            } catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        /// <summary>
+        /// Видалити чат з архіву
+        /// </summary>
+        /// <param name="chatId">Id чату</param>
+        /// <param name="userId">Id користувача для перевірки прав доступу на редагування інфорації про чат</param>
+        /// <returns>Інформація про кількість перенесених повідомлень</returns>
+        [HttpPut("{chatId}/unarchive")]
+        public IActionResult UnarchiveChat(int chatId, int userId, [FromBody] UnarchiveChatDto unarchiveChatDto)
+        {
+            try
+            {
+                var updatedChat = ChatMapper.unArchiveChat(_context, chatId, userId, unarchiveChatDto);
+                return Ok(updatedChat);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

@@ -16,12 +16,21 @@ namespace ChatProject.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Отримати всі повідомлення
+        /// </summary>
+        /// <returns>Список всіх повідомлень із усіх чатів</returns>
         [HttpGet]
         public IActionResult getAllMessage()
         {
             return Ok(MessageMapper.getAllMessage(_context));
         }
 
+        /// <summary>
+        ///Отримати повідомлення за його Id
+        /// </summary>
+        /// <param name="id">Id повідомлення</param>
+        /// <returns>Текст повідомлення за Id</returns>
         [HttpGet("{id}")]
         public IActionResult getMessageById([FromRoute] int id)
         {
@@ -36,6 +45,13 @@ namespace ChatProject.Controllers
             }
         }
 
+
+
+        /// <summary>
+        /// Створити нове повідомлення
+        /// </summary>
+        /// <param name="createMessageDto">Текст нового повідомлення</param>
+        /// <returns>Інформація про додане повідомлення</returns>
         [HttpPost]
         public IActionResult createMessage([FromBody] CreateMessageDto createMessageDto)
         {
