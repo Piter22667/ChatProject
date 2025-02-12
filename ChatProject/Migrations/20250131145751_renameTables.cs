@@ -28,7 +28,7 @@ namespace ChatProject.Migrations
                 });
 
 
-            migrationBuilder.RenameTable(name: "Users", newName: "User");
+            //migrationBuilder.RenameTable(name: "Users", newName: "User");
 
 
 

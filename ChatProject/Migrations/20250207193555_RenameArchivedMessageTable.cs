@@ -10,20 +10,20 @@ namespace ChatProject.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameTable(
-                name: "ArchivedMessages",
-                newName: "Archived"
-   );
+   //         migrationBuilder.RenameTable(
+   //             name: "ArchivedMessages",
+   //             newName: "Archived"
+   //);
 
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameTable(
-              name: "Archived",
-              newName: "ArchivedMessages"
-  );
+  //          migrationBuilder.RenameTable(
+  //            name: "Archived",
+  //            newName: "ArchivedMessages"
+  //);
         }
     }
 }
