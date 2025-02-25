@@ -36,14 +36,20 @@ namespace ChatProject.Mappers
         }
 
 
-
+        /// <summary>
+        /// Інформація про всіх користувачів
+        /// </summary>
+        /// <returns>Список всіх користувачів</returns>
         public static IEnumerable<UserDto> getllUsers(ApplicationDbContext dbContext)
         {
             return dbContext.User.Select(u => u.ToUserDto()).ToList();
         }
 
 
-
+        /// <summary>
+        /// Додати нового користувача
+        /// </summary>
+        /// <returns>Інформація про доданого користувача</returns>
         public static UserDto createUser(ApplicationDbContext dbContext, CreateUserDto createUserDto)
         {
 
@@ -57,7 +63,10 @@ namespace ChatProject.Mappers
             return user.ToUserDto();
 
         }
-
+        /// <summary>
+        /// Отримати користувача за id
+        /// </summary>
+        /// <returns>Інформація про користувача за Id</returns>
         public static UserDto getUserById(ApplicationDbContext dbContext, int id)
         {
             var user = dbContext.User.FirstOrDefault(u => u.Id == id);

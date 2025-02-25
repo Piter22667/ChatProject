@@ -11,9 +11,12 @@
         public DateTime? Expiration { get; set; }
         public Boolean isArchived { get; set; }
 
-        //Navition properties
+        //Navition properties   
         public User User { get; set; } // один чат належить тільки конкретному юзеру
         public ICollection<Message> Messages { get; set; } // один чат може мати багато повідомлень
         public ICollection<Archived> ArchivedMessages { get; set; } // один чат може мати багато архівованих повідомлень
+   
+        public ICollection<ChatUsers> ChatUsers { get; set; } = new List<ChatUsers>();
+    
     }
 }

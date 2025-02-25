@@ -14,6 +14,7 @@ namespace ChatProject.Data
         public DbSet<Models.Chat> Chats { get; set; }
         public DbSet<Models.Message> Messages { get; set; }
         public DbSet<Models.Archived> Archived { get; set; }
+        public DbSet<Models.ChatUsers> ChatUsers { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,7 +36,6 @@ namespace ChatProject.Data
                 entity.Property(e => e.UserId);
                 entity.Property(e => e.IsClosed).IsRequired().HasDefaultValue("false");
                 entity.Property(e => e.CreationTime).IsRequired().HasDefaultValueSql("GETUTCDATE()");
-                entity.Property(e => e.CreationTime);
                 entity.Property(e => e.Expiration);
                 entity.Property(e => e.UpdatedTime).IsRequired().HasDefaultValueSql("GETUTCDATE()");
             });
@@ -56,6 +56,13 @@ namespace ChatProject.Data
                 entity.Property(e => e.UserId).IsRequired();
                 entity.Property(e => e.Content).IsRequired();
                 entity.Property(e => e.SentTime).IsRequired();
+            });
+
+            modelBuilder.Entity<Models.ChatUsers>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.ChatId).IsRequired(false);
+                entity.Property(e => e.UserId).IsRequired(false);
             });
 
 
@@ -91,6 +98,18 @@ namespace ChatProject.Data
                 .HasOne(c => c.User)
                 .WithMany(u => u.Chats)
                 .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Models.ChatUsers>()
+                .HasOne(e => e.Chat)
+                .WithMany(c => c.ChatUsers)
+                .HasForeignKey(e => e.ChatId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Models.ChatUsers>()
+                .HasOne(e => e.User)
+                .WithMany(u => u.ChatUsers)
+                .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

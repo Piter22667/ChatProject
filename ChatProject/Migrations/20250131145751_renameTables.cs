@@ -28,7 +28,7 @@ namespace ChatProject.Migrations
                 });
 
 
-            //migrationBuilder.RenameTable(name: "Users", newName: "User");
+            //migrationBuilder.RenameTable(name: "ChatUsers", newName: "User");
 
 
 
@@ -123,7 +123,7 @@ namespace ChatProject.Migrations
             migrationBuilder.DropTable(
                 name: "Chats");
             
-            migrationBuilder.RenameTable(name: "User", newName: "Users");
+            migrationBuilder.RenameTable(name: "User", newName: "ChatUsers");
 
 
         }

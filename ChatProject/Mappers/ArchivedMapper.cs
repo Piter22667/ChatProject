@@ -28,12 +28,19 @@ namespace ChatProject.Mappers
                 SentTime = createArchivedMessageDto.SentTime,
             };
         }
-
+        /// <summary>
+        /// Отримати масив усіх повідомлень з архівованих чатів
+        /// </summary>
+        /// <returns>масив усіх повідомлень з архівованих чатів</returns>
         public static IEnumerable<ArchivedDto> getAllArchived(ApplicationDbContext dbContext)
         {
             return dbContext.Archived.Select(m => m.ToArchivedDto()).ToList();
         }
 
+        /// <summary>
+        /// Отримати архівоване повідомлення за Id
+        /// </summary>
+        /// <returns>Інформацію про повідомлення з архівованого чату за Id</returns>
         public static ArchivedDto getArchivedById(ApplicationDbContext dbContext, int id)
         {
             var archivedMessage = dbContext.Archived.FirstOrDefault(m => m.Id == id);

@@ -6,6 +6,7 @@ using ChatProject.Dto.Message;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
 using ChatProject.Controllers;
+using System;
 
 namespace ChatProject.Mappers
 {
@@ -26,6 +27,34 @@ namespace ChatProject.Mappers
                 isArchived = chat.isArchived
             };
         }
+
+
+
+        public static UpdatedChatReturnAllInfoDto ToUpdatedChatReturnAllInfoDto(this  Chat chat, List<int> userIds)
+        {
+            return new UpdatedChatReturnAllInfoDto
+            {
+                Title = chat.Title,
+                UserId = (int)chat.UserId,
+                IsClosed = chat.IsClosed,
+                CreationTime = chat.CreationTime,
+                UpdatedTime = chat.UpdatedTime,
+                Expiration = chat.Expiration,
+                isArchived = chat.isArchived,
+                UserIds = userIds ?? new List<int>() // Заглушка, якщо null
+
+            };
+        }
+
+        public static UsersListAddedToChatDto usersListAddedToChatDto(this Chat chat, List<int> userIds)
+        {
+            return new UsersListAddedToChatDto
+            {
+                UserIds = userIds
+            };
+        }
+
+
 
         public static Chat ToChatFromCreateDto(this CreateChatDto createChatDto)
         {
@@ -49,13 +78,29 @@ namespace ChatProject.Mappers
         }
 
 
-        public static UpdateChatTitleDto ToChatUpdateDto(this Chat chat)
+        //public static UpdateChatTitleDto ToChatUpdateDto(this Chat chat)
+        //{
+        //    return new UpdateChatTitleDto
+        //    {
+        //        Title = chat.Title
+        //    };
+        //}
+
+        /// <summary>
+        /// Інформація про чат після оновлення
+        /// </summary>
+        /// <returns>Інформація про чат після оновлння</returns>
+        public static ResultUpdateChatTitleDto resultUpdateChatTitle(this Chat chat)
         {
-            return new UpdateChatTitleDto
+
+           return new ResultUpdateChatTitleDto
             {
+                UserId = (int)chat.UserId,
+                CreationTime = chat.CreationTime,
                 Title = chat.Title
             };
         }
+
 
         public static UpdateChatActivityDto ToChatUpdateActivityDto(this Chat chat)
         {
@@ -67,12 +112,30 @@ namespace ChatProject.Mappers
         }
 
 
-
-        public static IEnumerable<ChatDto> getAllChats(ApplicationDbContext dbContext)
+        /// <summary>
+        /// Отримати інформацію про всі чати
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <returns>Json масив з інформацією про всі чати</returns>
+        public static IEnumerable<UpdatedChatReturnAllInfoDto> getAllChats(ApplicationDbContext dbContext)
         {
-            return dbContext.Chats.Select(c => c.ToChatDto()).ToList();
-        }
+            var chats = dbContext.Chats.ToList();
 
+            var chatDtos = chats.Select(chat =>
+            {
+                var userIds = dbContext.ChatUsers
+                    .Where(c => c.ChatId == chat.Id && c.UserId.HasValue)
+                    .Select(c => c.UserId.Value)
+                    .ToList();
+
+                return chat.ToUpdatedChatReturnAllInfoDto(userIds);
+            }).ToList();
+            return chatDtos;
+        }
+        /// <summary>
+        /// Створення запису про новий чат
+        /// </summary>
+        /// <returns>Інформацію про створений чат</returns>
         public static ChatDto createChat(ApplicationDbContext dbContext, CreateChatDto createChatDto)
         {
             if (createChatDto == null)
@@ -93,20 +156,59 @@ namespace ChatProject.Mappers
 
             return chat.ToChatDto();
         }
+
+
+        /// <summary>
+        /// Додати нового користувача до чату
+        /// </summary>
+        /// <returns>Повна інформація про чат з доданим користувачем</returns>
+        /// <exception cref="Exception"></exception>
+        public static UsersListAddedToChatDto addUserToChat(ApplicationDbContext dbContext, int chatId, AddUserToChatDto addUserToChatDto)
+        {
+            var chat = dbContext.Chats.FirstOrDefault(c => c.Id == chatId);
+            if(chat == null)
+            {
+                throw new Exception("Chat not found.");
+            }
+
+            var chatUser = new ChatUsers
+            {
+                ChatId = chatId,
+                UserId = addUserToChatDto.UserId
+            };
+
+            dbContext.ChatUsers.Add(chatUser);
+            dbContext.SaveChanges();
+
+            var userIds = dbContext.ChatUsers.Where(c => c.ChatId == chat.Id && c.UserId.HasValue)
+                .Select(c => c.UserId.Value)
+                .ToList(); //Збираємо всіх користувачів які належать до конкретного чату
+            return chat.usersListAddedToChatDto(userIds);
+        }
+
+
+
+
         /// <summary>
         /// Отримати чат по Id
         /// </summary>
         /// <param name="id">Id</param>
         /// <returns>Користувач із вказаним айді</returns>
         /// <exception cref="Exception"></exception>
-        public static ChatDto getChatById(ApplicationDbContext dbContext, int id)
+        public static UpdatedChatReturnAllInfoDto getChatById(ApplicationDbContext dbContext, int id)
         {
             var chat = dbContext.Chats.FirstOrDefault(c => c.Id == id);
             if (chat == null)
             {
                 throw new Exception("Chat not found.");
             }
-            return chat.ToChatDto();
+
+            var userIds = dbContext.ChatUsers
+                .Where(с => с.ChatId == chat.Id && с.UserId.HasValue) 
+                .Select(с => с.UserId.Value) // Перетворюємо int? -> int
+                .ToList();
+
+            return chat.ToUpdatedChatReturnAllInfoDto(userIds);
         }
 
         /// <summary>
@@ -127,8 +229,11 @@ namespace ChatProject.Mappers
         }
 
 
-
-        public static UpdateChatTitleDto updateChat(ApplicationDbContext dbContext, int id, UpdateChatTitleDto updateChatDto)
+        /// <summary>
+        /// Оновлення заголовку чату
+        /// </summary>
+        /// <returns>Інформація про чат пілся оновлення</returns>
+        public static ResultUpdateChatTitleDto updateChat(ApplicationDbContext dbContext, int id, UpdateChatTitleDto updateChatDto)
         {
             var chat = dbContext.Chats.FirstOrDefault(c => c.Id == id);
             if (chat == null)
@@ -140,9 +245,12 @@ namespace ChatProject.Mappers
             chat.UpdatedTime = DateTime.UtcNow; // Примусово встановлюємо поточний UTC час
             dbContext.Chats.Update(chat);
             dbContext.SaveChanges();
-            return chat.ToChatUpdateDto();
+            return chat.resultUpdateChatTitle();
         }
-
+        /// <summary>
+        /// Редагування активності чату(відкритий\закритий) для написання повідомлень
+        /// </summary>
+        /// <returns>Інформація про чат після оновлення</returns>
         public static UpdateChatActivityDto updateChatActivity(ApplicationDbContext dbContext, int id, UpdateChatActivityDto updateChatDto)
         {
             int userId = 1; //Заглушка під юзера
@@ -164,7 +272,11 @@ namespace ChatProject.Mappers
             return chat.ToChatUpdateActivityDto();
         }
 
-
+        /// <summary>
+        /// Ручна архівація повідомлень з чату за Id
+        /// </summary>
+        /// <param name="chatId">Id чату, який потрібно архівувати </param>
+        /// <returns>Кількість архівованих повідмомлень з чату</returns>
         public static MessagesInChatToReturnDto archiveChat(ApplicationDbContext dbContext, int chatId)
         {
             int userId = 1; //Заглушка під юзер айді
@@ -205,7 +317,10 @@ namespace ChatProject.Mappers
 
 
 
-
+        /// <summary>
+        /// Роззархівування чату за Id
+        /// </summary>
+        /// <returns>Кількість розархівованих повідомлень з чату за Id</returns>
         public static MessagesInChatToReturnDto unArchiveChat(ApplicationDbContext dbContext, int chatId, UnarchiveChatDto unarchiveChatDto)
         {
             int userId = 1; //Заглушка під юзер айді
