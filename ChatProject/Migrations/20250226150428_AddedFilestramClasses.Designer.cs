@@ -4,6 +4,7 @@ using ChatProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatProject.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250226150428_AddedFilestramClasses")]
+    partial class AddedFilestramClasses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,33 +185,6 @@ namespace ChatProject.Migrations
                     b.ToTable("ChatFileConnections");
                 });
 
-            modelBuilder.Entity("ChatProject.Models.Files.ChatFileNameMap", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("FileId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("HashedName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("MessageId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("OriginalName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FileId");
-
-                    b.HasIndex("MessageId");
-
-                    b.ToTable("ChatFileNameMap");
-                });
-
             modelBuilder.Entity("ChatProject.Models.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -341,22 +317,6 @@ namespace ChatProject.Migrations
                     b.Navigation("ChatFile");
                 });
 
-            modelBuilder.Entity("ChatProject.Models.Files.ChatFileNameMap", b =>
-                {
-                    b.HasOne("ChatProject.Models.Files.ChatFile", "ChatFile")
-                        .WithMany("ChatFileNameMap")
-                        .HasForeignKey("FileId");
-
-                    b.HasOne("ChatProject.Models.Message", "Message")
-                        .WithMany("ChatFileNameMap")
-                        .HasForeignKey("MessageId")
-                        .IsRequired();
-
-                    b.Navigation("ChatFile");
-
-                    b.Navigation("Message");
-                });
-
             modelBuilder.Entity("ChatProject.Models.Message", b =>
                 {
                     b.HasOne("ChatProject.Models.Chat", "Chat")
@@ -390,13 +350,6 @@ namespace ChatProject.Migrations
             modelBuilder.Entity("ChatProject.Models.Files.ChatFile", b =>
                 {
                     b.Navigation("ChatFileConnections");
-
-                    b.Navigation("ChatFileNameMap");
-                });
-
-            modelBuilder.Entity("ChatProject.Models.Message", b =>
-                {
-                    b.Navigation("ChatFileNameMap");
                 });
 
             modelBuilder.Entity("ChatProject.Models.User", b =>

@@ -1,4 +1,6 @@
-﻿namespace ChatProject.Models
+﻿using ChatProject.Models.Files;
+
+namespace ChatProject.Models
 {
     public class Message
     {
@@ -11,5 +13,10 @@
         // Navigation properties
         public User User { get; set; } // одне повідомлення належить тільки конкретному юзеру
         public Chat Chat { get; set; } // одне повідомлення належить тільки конкретному чату
+
+        public ICollection<ChatFileNameMap> ChatFileNameMap { get; set; } = new List<ChatFileNameMap>(); // Колекція прив’язаних файлів
+
+
+
     }
 }

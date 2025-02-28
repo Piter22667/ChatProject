@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using ChatProject.Dto.Files;
+using System.ComponentModel;
 
 namespace ChatProject.Dto.Chat
 {
@@ -13,5 +14,12 @@ namespace ChatProject.Dto.Chat
         [DefaultValue(false)]
         public Boolean isArchived { get; set; }
         public List<int>? UserIds { get; set; }
+
+
+
+        //отримання інформацій про файли
+        public List<AttachedFileDto> AttachedFiles { get; set; } = new List<AttachedFileDto>(); // Масив файлів
+
+
     }
 }

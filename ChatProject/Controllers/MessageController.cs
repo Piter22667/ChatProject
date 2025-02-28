@@ -45,25 +45,28 @@ namespace ChatProject.Controllers
             }
         }
 
-
-
         /// <summary>
         /// Створити нове повідомлення
         /// </summary>
         /// <param name="createMessageDto">Текст нового повідомлення</param>
         /// <returns>Інформація про додане повідомлення</returns>
         [HttpPost]
-        public IActionResult createMessage([FromBody] CreateMessageDto createMessageDto)
+        public async Task<IActionResult> createMessage([FromForm] CreateMessageDto createMessageDto)
         {
             try
             {
-                var message = MessageMapper.createMessage(_context, createMessageDto);
+                var message = await MessageMapper.createMessage(_context, createMessageDto);
                 return Ok(message);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+        // !!! перевірка розміру файлу, перевірка на розширення і зробити щоб користувач
+        // міг завантажувати декілька файлів з однаковим іменем 
+        //!!! (додати перевірку на те, щоб користувач міг потім завантажувати файл зі справжнім іменем,
+        //а при збергіаннні в бд реалізувати якусь логіку для того, 
+        //!!! щоб зберігати в бд з якимось рандомним іменем).
         }
     }
 }

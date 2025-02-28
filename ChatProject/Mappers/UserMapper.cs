@@ -21,7 +21,6 @@ namespace ChatProject.Mappers
             };
         }
 
-
         public static User ToUsersFromCreateDto(this CreateUserDto createUsersDto)
         {
             return new User
@@ -35,7 +34,6 @@ namespace ChatProject.Mappers
             };
         }
 
-
         /// <summary>
         /// Інформація про всіх користувачів
         /// </summary>
@@ -45,14 +43,12 @@ namespace ChatProject.Mappers
             return dbContext.User.Select(u => u.ToUserDto()).ToList();
         }
 
-
         /// <summary>
         /// Додати нового користувача
         /// </summary>
         /// <returns>Інформація про доданого користувача</returns>
         public static UserDto createUser(ApplicationDbContext dbContext, CreateUserDto createUserDto)
         {
-
             if(createUserDto == null)
             {
                 throw new Exception("User data cannot be null.");

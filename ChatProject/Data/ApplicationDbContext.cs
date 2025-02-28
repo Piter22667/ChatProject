@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ChatProject.Models.Files;
 
 
 namespace ChatProject.Data
@@ -15,6 +16,10 @@ namespace ChatProject.Data
         public DbSet<Models.Message> Messages { get; set; }
         public DbSet<Models.Archived> Archived { get; set; }
         public DbSet<Models.ChatUsers> ChatUsers { get; set; }
+        public DbSet<ChatFile> ChatFile { get; set; }
+        public DbSet<ChatFileConnections> ChatFileConnections { get; set; }
+
+        public DbSet<ChatFileNameMap> ChatFileNameMap { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,6 +70,37 @@ namespace ChatProject.Data
                 entity.Property(e => e.UserId).IsRequired(false);
             });
 
+            modelBuilder.Entity<ChatFile>(entity =>
+            {
+                entity.HasKey(e => e.StreamId);
+                entity.Property(e => e.StreamId).HasColumnName("stream_id");
+                entity.Property(e => e.Name).HasColumnName("name");
+                entity.Property(e => e.CreationTime).HasColumnName("creation_time").HasColumnType("DateTimeOffset");
+                entity.Property(e => e.LastAccessTime).HasColumnName("last_access_time").HasColumnType("DateTimeOffset");
+                entity.Property(e => e.LastUpdatedTime).HasColumnName("last_write_time").HasColumnType("DateTimeOffset");
+                entity.Property(e => e.FileStream).HasColumnName("file_stream").HasColumnType("varbinary(max)").IsRequired(false);
+                entity.Property(e => e.FileType).HasColumnName("file_type").HasComputedColumnSql("[RIGHT(Name; CHARINDEX('.', RESERVE(Name)) -1\r\n]");
+            });
+
+            modelBuilder.Entity<ChatFileConnections>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.ChatId).IsRequired();
+                entity.Property(e => e.FileId).IsRequired();
+
+
+            });
+
+
+            modelBuilder.Entity<ChatFileNameMap>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.HashedName).IsRequired(false);
+                entity.Property(e => e.OriginalName).IsRequired(false);
+                entity.Property(e => e.FileId).IsRequired(false);
+            });
+
+
 
             //встановлення зв'язків
             modelBuilder.Entity<Models.Message>() //один юзер може мати багато повідомлень
@@ -111,6 +147,31 @@ namespace ChatProject.Data
                 .WithMany(u => u.ChatUsers)
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ChatFileConnections>()
+                .HasOne(e => e.ChatFile)
+                .WithMany(e => e.ChatFileConnections)
+                .HasForeignKey(e => e.FileId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            modelBuilder.Entity<ChatFileConnections>()
+               .HasOne(e => e.Chat)
+               .WithMany(e => e.ChatFileConnections)
+               .HasForeignKey(e => e.ChatId)
+               .OnDelete(DeleteBehavior.ClientSetNull);
+
+            ////Зв'зок між ChatFiles та ChatFileNameMap 1:N
+            //modelBuilder.Entity<ChatFileNameMap>()
+            //    .HasOne(e => e.ChatFile)
+            //    .WithMany(e => e.ChatFileNameMap)
+            //    .HasForeignKey(e => e.FileId)
+            //    .OnDelete(DeleteBehavior.ClientSetNull);
+
+            //modelBuilder.Entity<ChatFileNameMap>()
+            //    .HasOne(e => e.Message)
+            //    .WithMany(e => e.ChatFileNameMap)
+            //    .HasForeignKey(e => e.MessageId)
+            //    .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }

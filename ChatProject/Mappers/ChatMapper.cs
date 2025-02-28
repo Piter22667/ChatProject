@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using System.Data.Common;
 using ChatProject.Controllers;
 using System;
+using ChatProject.Dto.Files;
 
 namespace ChatProject.Mappers
 {
@@ -42,6 +43,7 @@ namespace ChatProject.Mappers
                 Expiration = chat.Expiration,
                 isArchived = chat.isArchived,
                 UserIds = userIds ?? new List<int>() // Заглушка, якщо null
+
 
             };
         }
@@ -171,11 +173,18 @@ namespace ChatProject.Mappers
                 throw new Exception("Chat not found.");
             }
 
+
             var chatUser = new ChatUsers
             {
                 ChatId = chatId,
                 UserId = addUserToChatDto.UserId
             };
+
+            bool isUserAlredyExistInChat = dbContext.ChatUsers.Any(c => c.ChatId == chatId && c.UserId == addUserToChatDto.UserId);
+            if (isUserAlredyExistInChat)
+            {
+                throw new Exception("User already exist in this chat");
+            } // Перевірка на існування користувача в чаті
 
             dbContext.ChatUsers.Add(chatUser);
             dbContext.SaveChanges();
@@ -185,9 +194,6 @@ namespace ChatProject.Mappers
                 .ToList(); //Збираємо всіх користувачів які належать до конкретного чату
             return chat.usersListAddedToChatDto(userIds);
         }
-
-
-
 
         /// <summary>
         /// Отримати чат по Id
@@ -203,12 +209,31 @@ namespace ChatProject.Mappers
                 throw new Exception("Chat not found.");
             }
 
+            var attachedFiles = dbContext.ChatFileConnections.Where(cfc => cfc.ChatId == chat.Id).Select(cfc => new AttachedFileDto
+            {
+                StreamId = cfc.ChatFile.StreamId,
+                FileName = cfc.ChatFile.Name,
+
+            }).ToList();
+
             var userIds = dbContext.ChatUsers
                 .Where(с => с.ChatId == chat.Id && с.UserId.HasValue) 
                 .Select(с => с.UserId.Value) // Перетворюємо int? -> int
                 .ToList();
 
-            return chat.ToUpdatedChatReturnAllInfoDto(userIds);
+            return new UpdatedChatReturnAllInfoDto
+            {
+                Title = chat.Title,
+                UserId = (int)chat.UserId,
+                IsClosed = chat.IsClosed,
+                CreationTime = chat.CreationTime,
+                UpdatedTime = chat.UpdatedTime,
+                Expiration = chat.Expiration,
+                isArchived = chat.isArchived,
+                UserIds = userIds,
+                AttachedFiles = attachedFiles
+
+            };
         }
 
         /// <summary>
@@ -247,6 +272,7 @@ namespace ChatProject.Mappers
             dbContext.SaveChanges();
             return chat.resultUpdateChatTitle();
         }
+
         /// <summary>
         /// Редагування активності чату(відкритий\закритий) для написання повідомлень
         /// </summary>

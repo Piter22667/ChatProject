@@ -1,7 +1,9 @@
 ﻿using ChatProject.Data;
 using ChatProject.Dto.Chat;
+using ChatProject.Dto.Files;
 using ChatProject.Dto.Message;
 using ChatProject.Models;
+using ChatProject.Models.Files;
 namespace ChatProject.Mappers
 {
     public static class MessageMapper
@@ -19,6 +21,25 @@ namespace ChatProject.Mappers
             };
         }
 
+
+
+
+        //public static MessageWithAttachedFilesDto toMessageWithAttachedFilesDto(this Models.Message message)
+        //{
+        //    return new MessageWithAttachedFilesDto
+        //    {
+        //        Id = message.Id,
+        //        ChatId = message.ChatId,
+        //        UserId = message.UserId,
+        //        Content = message.Content,
+        //        SentTime = message.SentTime,
+        //        StreamId = 
+        //    }
+        //}
+
+
+
+
         public static Message ToMessageFromCreateDto(this CreateMessageDto createMessageDto)
         {
             return new Message
@@ -27,6 +48,7 @@ namespace ChatProject.Mappers
                 SentTime = createMessageDto.SentTime,
                 ChatId = createMessageDto.ChatId,
                 UserId = createMessageDto.UserId,
+                
             };
         }
         /// <summary>
@@ -35,15 +57,14 @@ namespace ChatProject.Mappers
         /// <returns>Список всых повыдомлень з усіх чатів у форматі json</returns>
         public static IEnumerable<MessageDto> getAllMessage(ApplicationDbContext context)
         {
-            return context.Messages.Select(c => c.ToMessageDto()).ToList()
-               ;
+            return context.Messages.Select(c => c.ToMessageDto()).ToList();
         }
 
         /// <summary>
         /// Створити нове повідомлення
         /// </summary>
         /// <returns>Інформація про новий запис в таблиці повідомлень</returns>
-        public static MessageDto createMessage(ApplicationDbContext context, CreateMessageDto createMessageDto)
+        public static async Task<MessageDto> createMessage(ApplicationDbContext context, CreateMessageDto createMessageDto)
         {
             if (createMessageDto == null)
             {
@@ -59,21 +80,39 @@ namespace ChatProject.Mappers
 
             var message = createMessageDto.ToMessageFromCreateDto();
             context.Messages.Add(message);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
+            await ChatFileMapper.SaveChatFileAsync(createMessageDto, context);
             return message.ToMessageDto();
         }
         /// <summary>
         /// Отримання чату за id
         /// </summary>
         /// <returns>Інформація про чат за Id</returns>
-        public static MessageDto getMessageById(ApplicationDbContext context, int id)
+        public static MessageWithAttachedFilesDto getMessageById(ApplicationDbContext context, int id)
         {
             var message = context.Messages.Find(id);
             if (message == null)
             {
-                throw new Exception("Chat not found.");
+                throw new Exception("Message not found.");
             }
-            return message.ToMessageDto();
+
+
+            var attachedFiles = context.ChatFileConnections.Where(cfc => cfc.ChatId == message.ChatId).Select(cfc => new AttachedFileDto
+            {
+                StreamId = cfc.ChatFile.StreamId,
+                FileName = cfc.ChatFile.Name,
+
+            }).ToList();
+
+            return new MessageWithAttachedFilesDto
+            {
+                Id = message.Id,
+                ChatId = message.ChatId,
+                UserId = message.UserId,
+                Content = message.Content,
+                SentTime = message.SentTime,
+                AttachedFiles = attachedFiles
+            };
         }
     }
 }
