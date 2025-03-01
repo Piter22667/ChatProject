@@ -18,7 +18,6 @@ namespace ChatProject.Models
         public ICollection<Message> Messages { get; set; } // один чат може мати багато повідомлень
         public ICollection<Archived> ArchivedMessages { get; set; } // один чат може мати багато архівованих повідомлень
         public ICollection<ChatUsers> ChatUsers { get; set; } = new List<ChatUsers>();
-        public virtual ICollection<ChatFileConnections> ChatFileConnections { get; set; } = new List<ChatFileConnections>();
     
     }
 }

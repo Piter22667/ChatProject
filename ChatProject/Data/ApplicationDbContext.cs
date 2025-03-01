@@ -85,7 +85,7 @@ namespace ChatProject.Data
             modelBuilder.Entity<ChatFileConnections>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.ChatId).IsRequired();
+                entity.Property(e => e.MessageId).IsRequired(false);
                 entity.Property(e => e.FileId).IsRequired();
 
 
@@ -154,11 +154,19 @@ namespace ChatProject.Data
                 .HasForeignKey(e => e.FileId)
                 .OnDelete(DeleteBehavior.ClientSetNull);
 
+            //modelBuilder.Entity<ChatFileConnections>()
+            //   .HasOne(e => e.Chat)
+            //   .WithMany(e => e.ChatFileConnections)
+            //   .HasForeignKey(e => e.ChatId)
+            //   .OnDelete(DeleteBehavior.ClientSetNull);
+
+
             modelBuilder.Entity<ChatFileConnections>()
-               .HasOne(e => e.Chat)
+               .HasOne(e => e.Message)
                .WithMany(e => e.ChatFileConnections)
-               .HasForeignKey(e => e.ChatId)
+               .HasForeignKey(e => e.MessageId)
                .OnDelete(DeleteBehavior.ClientSetNull);
+
 
             ////Зв'зок між ChatFiles та ChatFileNameMap 1:N
             //modelBuilder.Entity<ChatFileNameMap>()

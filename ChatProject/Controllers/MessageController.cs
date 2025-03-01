@@ -45,17 +45,38 @@ namespace ChatProject.Controllers
             }
         }
 
+
         /// <summary>
-        /// Створити нове повідомлення
+        /// Отримання всіх повідомлень з конкретного чату за айді
         /// </summary>
-        /// <param name="createMessageDto">Текст нового повідомлення</param>
-        /// <returns>Інформація про додане повідомлення</returns>
-        [HttpPost]
-        public async Task<IActionResult> createMessage([FromForm] CreateMessageDto createMessageDto)
+        /// <param name="id">Id чату</param>
+        /// <returns></returns>
+        [HttpGet("{id}/AllmessagesFromChat")]
+        public IActionResult getAllMessagesFromChat([FromRoute] int id)
         {
             try
             {
-                var message = await MessageMapper.createMessage(_context, createMessageDto);
+                var messages = MessageMapper.getAllMessagesFromChat(_context, id);
+                return Ok(messages);
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            } 
+        }
+
+
+
+      /// <summary>
+      /// Створити нове повідомлення
+      /// </summary>
+      /// <param name="createMessageDto">Текст нового повідомлення</param>
+      /// <returns>Інформація про додане повідомлення</returns>
+      [HttpPost]
+        public async Task<IActionResult> createMessage([FromForm] CreateMessageWithFileDto createMessageWithFileDto)
+        {
+            try
+            {
+                var message = await MessageMapper.createMessage(_context, createMessageWithFileDto);
                 return Ok(message);
             }
             catch (Exception ex)
@@ -68,5 +89,7 @@ namespace ChatProject.Controllers
         //а при збергіаннні в бд реалізувати якусь логіку для того, 
         //!!! щоб зберігати в бд з якимось рандомним іменем).
         }
+
+      
     }
 }

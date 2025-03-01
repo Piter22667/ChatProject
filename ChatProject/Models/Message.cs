@@ -14,8 +14,9 @@ namespace ChatProject.Models
         public User User { get; set; } // одне повідомлення належить тільки конкретному юзеру
         public Chat Chat { get; set; } // одне повідомлення належить тільки конкретному чату
 
-        public ICollection<ChatFileNameMap> ChatFileNameMap { get; set; } = new List<ChatFileNameMap>(); // Колекція прив’язаних файлів
+        //public ICollection<ChatFileNameMap> ChatFileNameMap { get; set; } = new List<ChatFileNameMap>(); // Колекція прив’язаних файлів
 
+        public virtual ICollection<ChatFileConnections> ChatFileConnections { get; set; } = new List<ChatFileConnections>();
 
 
     }

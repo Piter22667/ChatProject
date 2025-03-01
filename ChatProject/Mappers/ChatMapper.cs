@@ -76,7 +76,7 @@ namespace ChatProject.Mappers
         ///Розширюваний метод для отримання всхі повідомлень з конкретного чату
         public static IEnumerable<MessageDto> ToMessageDto(this IEnumerable<Models.Message> messages)
         {
-            return messages.Select(m => m.ToMessageDto());
+            return messages.Select(m => m.ToMessageBasicDto());
         }
 
 
@@ -208,8 +208,9 @@ namespace ChatProject.Mappers
             {
                 throw new Exception("Chat not found.");
             }
+            var message = dbContext.Messages.FirstOrDefault(m => m.ChatId == chat.Id);
 
-            var attachedFiles = dbContext.ChatFileConnections.Where(cfc => cfc.ChatId == chat.Id).Select(cfc => new AttachedFileDto
+            var attachedFiles = dbContext.ChatFileConnections.Where(cfc => cfc.MessageId == message.Id).Select(cfc => new AttachedFileDto
             {
                 StreamId = cfc.ChatFile.StreamId,
                 FileName = cfc.ChatFile.Name,
